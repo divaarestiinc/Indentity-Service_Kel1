@@ -51,5 +51,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+
+        // 👉 Tambahan untuk proteksi halaman frontend API (token session)
+        'auth.frontend' => \App\Http\Middleware\FrontendAuth::class,
     ];
 }
