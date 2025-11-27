@@ -132,7 +132,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => auth()->user()
+            'data'    => auth('api')->user()
         ]);
     }
 
@@ -154,7 +154,8 @@ class AuthController extends Controller
     public function refresh()
     {
         try {
-            $newToken = auth()->refresh();
+            $token = JWTAuth::getToken();
+            $newToken = JWTAuth::refresh($token);
             return $this->respondWithToken($newToken);
         } catch (\Exception $e) {
             return response()->json([
@@ -171,8 +172,8 @@ class AuthController extends Controller
             'success'      => true,
             'access_token' => $token,
             'token_type'   => 'bearer',
-            'expires_in'   => auth()->factory()->getTTL() * 60,
-            'user'         => auth()->user()
+            'expires_in'   => JWTAuth::factory()->getTTL() * 60,
+            'user'         => auth('api')->user()
         ]);
     }
 

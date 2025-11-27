@@ -14,7 +14,7 @@ Route::prefix('auth')->group(function () {
 Route::post('password/forgot', [PasswordResetController::class, 'sendResetLink']);
 Route::post('password/reset', [PasswordResetController::class, 'reset']);
 
-Route::middleware(['jwt.verify'])->group(function () {
+Route::middleware(['api','jwt.verify'])->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);

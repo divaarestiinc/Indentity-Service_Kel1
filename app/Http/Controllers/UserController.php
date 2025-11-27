@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use OpenApi\Annotations as OA;
 
 class UserController extends Controller
@@ -32,7 +33,7 @@ class UserController extends Controller
      */
     public function me()
     {
-        return response()->json(['success' => true, 'data' => auth()->user()]);
+        return response()->json(['success' => true, 'data' => Auth::user()]);
     }
 
     /**
@@ -69,8 +70,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if (!$user) return response()->json(['success'=>false,'message'=>'User not found'],404);
-
-        $auth = auth()->user();
+        $auth = Auth::user();
         if ($auth->role !== 'admin' && $auth->id !== $user->id) {
             return response()->json(['success'=>false,'message'=>'Forbidden'],403);
         }
@@ -121,7 +121,7 @@ class UserController extends Controller
         $user = User::find($id);
         if (!$user) return response()->json(['success'=>false,'message'=>'User not found'],404);
 
-        $auth = auth()->user();
+        $auth = Auth::user();
         if ($auth->id !== $user->id && $auth->role !== 'admin') {
             return response()->json(['success'=>false,'message'=>'Forbidden'],403);
         }

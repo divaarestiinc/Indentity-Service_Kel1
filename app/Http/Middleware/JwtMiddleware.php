@@ -15,7 +15,7 @@ class JwtMiddleware
     {
         $token = $request->bearerToken();
 
-        if(!$token){
+        if (!$token) {
             return response()->json([
                 'success' => false,
                 'message' => 'Token tidak ditemukan, silahkan login!'
@@ -24,9 +24,8 @@ class JwtMiddleware
 
         try {
             $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
-            $request->auth = (array) $decoded;
-        } 
-        catch(Exception $e){
+            $request->attributes->set('auth', (array) $decoded);
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Token tidak valid atau sudah expired',
