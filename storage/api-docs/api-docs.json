@@ -6,6 +6,213 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/admin/users": {
+            "get": {
+                "tags": [
+                    "Admin Users"
+                ],
+                "summary": "List users with pagination & search",
+                "operationId": "895101ef1a579f1e11fb7d2ffac04d5b",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search by name or email",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User list retrieved successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Users"
+                ],
+                "summary": "Create a new user (admin only)",
+                "operationId": "561f65ab349d23d53530ee93e2d9cc83",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Diva Resti"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "diva@mail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "mahasiswa"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/users/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Users"
+                ],
+                "summary": "Get a user by ID",
+                "operationId": "51159e46254cba5a8a3de7f73f8a4069",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User retrieved successfully"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin Users"
+                ],
+                "summary": "Update user",
+                "operationId": "3cff82dadd612024cd13678faaa31dc4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nama Baru"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "emailbaru@mail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "passwordbaru"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "dosen"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Users"
+                ],
+                "summary": "Delete user",
+                "operationId": "7fc05bea7002c6d0e56e5c5994731c66",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted successfully"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/register": {
             "post": {
                 "tags": [
@@ -232,6 +439,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Admin Users",
+            "description": "Admin Users"
+        },
         {
             "name": "Auth",
             "description": "Auth"
