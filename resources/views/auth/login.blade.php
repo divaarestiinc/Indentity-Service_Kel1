@@ -1,19 +1,93 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
 
-@section('content')
-<h2>Login</h2>
-<form action="/login" method="POST">
-    @csrf
+    background-image: url("{{ asset('asset/images/kampus.jpeg') }}");
+    background-size: cover;
+    background-position: center 70%;
+    background-repeat: no-repeat;
 
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
+    /* Overlay putih transparan agar gambar samar */
+    position: relative;
+}
 
-    <button type="submit">Login</button>
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.55); /* 0.55 = makin besar makin samar */
+    backdrop-filter: blur(6px); /* Tambah blur biar makin lembut */
+    z-index: -1;
+}
 
-    @if ($errors->any())
-        <p style="color:red;">{{ $errors->first() }}</p>
-    @endif
+</style>
 
-    <p>Belum punya akun? <a href="/register">Daftar</a></p>
-</form>
-@endsection
+
+</head>
+<body>
+
+    <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-center mb-6 text-[#133E87]">
+            Selamat Datang
+        </h2>
+
+        @if(session('error'))
+            <div class="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="/login" method="POST" class="space-y-4">
+            @csrf
+
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Email</label>
+                <input type="email" name="email" required
+                       class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#133E87]" 
+                       placeholder="Masukkan email">
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Password</label>
+                <input type="password" name="password" required
+                       class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#133E87]"
+                       placeholder="Masukkan password">
+            </div>
+
+            <button type="submit" 
+                class="w-full py-2 font-semibold rounded-lg transition text-white"
+                style="background-color:#133E87;">
+                Login
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-gray-600 mt-4">
+            Belum punya akun?
+            <a href="/register" class="font-semibold" style="color:#133E87;">Register</a>
+        </p>
+    </div>
+
+</body>
+</html>

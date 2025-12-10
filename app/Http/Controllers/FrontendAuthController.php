@@ -32,16 +32,24 @@ class FrontendAuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
-    {
-        $response = Http::post('http://localhost:8000/api/register', $request->all());
+  public function register(Request $request)
+{
+    $url = env('API_URL') . '/register';
 
-        if ($response->successful()) {
-            return redirect('/login')->with('success', 'Registrasi berhasil, silakan login');
-        }
+    $response = Http::post($url, [
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => $request->password,
+        'role' => $request->role,
+    ]);
 
-        return back()->withErrors(['register' => 'Registrasi gagal']);
+    if ($response->successful()) {
+        return redirect('/login')->with('success', 'Registrasi berhasil, silakan login');
     }
+
+    return back()->withErrors(['register' => 'Registrasi gagal']);
+}
+
 
     public function logout()
     {
