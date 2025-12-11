@@ -30,7 +30,7 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
 
 # Generate key
-RUN php artisan key:generate --force
+
 
 # Expose port
 EXPOSE 8080
