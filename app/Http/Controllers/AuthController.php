@@ -77,7 +77,7 @@ class AuthController extends Controller
         return ApiResponse::success([
             'access_token' => $token,
             'token_type'   => 'bearer',
-            'expires_in'   => auth()->factory()->getTTL() * 60
+            'expires_in'   => JWTAuth::factory()->getTTL() * 60
         ], "Login successful");
     }
 
@@ -92,7 +92,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return ApiResponse::success(auth()->user(), "User data fetched");
+        return ApiResponse::success(JWTAuth::user(), "User data fetched");
     }
 
     /**
@@ -178,7 +178,7 @@ class AuthController extends Controller
     public function refresh()
     {
         return ApiResponse::success([
-            'access_token' => auth()->refresh(),
+            'access_token' => JWTAuth::refresh(JWTAuth::getToken()),
             'token_type'   => 'bearer'
         ], "Token refreshed successfully");
     }
