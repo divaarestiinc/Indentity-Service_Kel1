@@ -1,0 +1,45 @@
+{
+  "info": {
+    "name": "Identity Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Diva\",\"email\":\"diva@mail.com\",\"password\":\"123456\",\"role\":\"mahasiswa\"}"
+        },
+        "url": {"raw":"{{base_url}}/api/register","host":["{{base_url}}"],"path":["api","register"]}
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {"mode":"raw","raw":"{\"email\":\"diva@mail.com\",\"password\":\"123456\"}"},
+        "url": {"raw":"{{base_url}}/api/login","host":["{{base_url}}"],"path":["api","login"]}
+      }
+    },
+    {
+      "name": "Get Profile",
+      "request": {
+        "method": "GET",
+        "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+        "url": {"raw":"{{base_url}}/api/me","host":["{{base_url}}"],"path":["api","me"]}
+      }
+    },
+    {
+      "name": "Get Users",
+      "request": {
+        "method": "GET",
+        "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+        "url": {"raw":"{{base_url}}/api/users","host":["{{base_url}}"],"path":["api","users"]}
+      }
+    }
+  ]
+}
