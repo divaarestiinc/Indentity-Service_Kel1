@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Resources\ApiResponse;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -31,23 +33,20 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            'role'     => 'required|in:mahasiswa,dosen,admin_prodi,admin_poli'
+            'name'      => 'required|string|max:191',
+            'email'     => 'required|email|unique:users,email',
+            'password'  => 'required|min:6',
+            'role'      => ['required', Rule::in(['mahasiswa','dosen','admin_prodi','admin_poli'])]
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => $request->role,
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'password'  => Hash::make($request->password),
+            'role'      => $request->role,
         ]);
 
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user'    => $user
-        ], 201);
+        return ApiResponse::success($user, 'User registered successfully', 201);
     }
 
     /**
@@ -63,7 +62,7 @@ class AuthController extends Controller
      *             @OA\Property(property="password", type="string", example="123456")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="Login success, return JWT token"),
+     *     @OA\Response(response=200, description="Login success"),
      *     @OA\Response(response=401, description="Invalid credentials")
      * )
      */
@@ -72,14 +71,14 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid Credentials'], 401);
+            return ApiResponse::error("Invalid credentials", 401);
         }
 
-        return response()->json([
-            'token'      => $token,
-            'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60
-        ], 200);
+        return ApiResponse::success([
+            'access_token' => $token,
+            'token_type'   => 'bearer',
+            'expires_in'   => auth()->factory()->getTTL() * 60
+        ], "Login successful");
     }
 
     /**
@@ -93,7 +92,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(JWTAuth::parseToken()->authenticate());
+        return ApiResponse::success(auth()->user(), "User data fetched");
     }
 
     /**
@@ -105,31 +104,22 @@ class AuthController extends Controller
      *     @OA\Parameter(
      *         name="role",
      *         in="query",
-     *         description="Filter by role (mahasiswa/dosen/admin)",
+     *         description="Filter by role",
      *         required=false,
      *         @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success get users data"
-     *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Unauthorized"
-     *     )
+     *     @OA\Response(response=200, description="Success get users data")
      * )
      */
     public function getUsers(Request $request)
     {
         $role = $request->query('role');
 
-        if ($role) {
-            $users = User::where('role', $role)->get();
-        } else {
-            $users = User::all();
-        }
+        $users = $role ? 
+            User::where('role', $role)->get() :
+            User::all();
 
-        return response()->json($users, 200);
+        return ApiResponse::success($users, "Users fetched successfully");
     }
 
     /**
@@ -145,14 +135,8 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success get user data"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="User not found"
-     *     )
+     *     @OA\Response(response=200, description="Success get user data"),
+     *     @OA\Response(response=404, description="User not found")
      * )
      */
     public function getUserById($id)
@@ -160,12 +144,10 @@ class AuthController extends Controller
         $user = User::find($id);
 
         if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
+            return ApiResponse::error("User not found", 404);
         }
 
-        return response()->json($user, 200);
+        return ApiResponse::success($user, "User fetched successfully");
     }
 
     /**
@@ -174,21 +156,15 @@ class AuthController extends Controller
      *     summary="Logout user and invalidate token",
      *     tags={"Auth"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Logout success"
-     *     )
+     *     @OA\Response(response=200, description="Logout success")
      * )
      */
     public function logout()
     {
         JWTAuth::invalidate(JWTAuth::getToken());
 
-        return response()->json([
-            'message' => 'Successfully logged out'
-        ]);
+        return ApiResponse::success(null, "Successfully logged out");
     }
-
 
     /**
      * @OA\Post(
@@ -196,17 +172,14 @@ class AuthController extends Controller
      *     summary="Refresh JWT token",
      *     tags={"Auth"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Refresh token success"
-     *     )
+     *     @OA\Response(response=200, description="Refresh token success")
      * )
      */
     public function refresh()
     {
-        return response()->json([
-            'access_token' => JWTAuth::refresh(JWTAuth::getToken()),
-            'token_type' => 'bearer'
-        ]);
+        return ApiResponse::success([
+            'access_token' => auth()->refresh(),
+            'token_type'   => 'bearer'
+        ], "Token refreshed successfully");
     }
 }

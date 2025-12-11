@@ -1,0 +1,39 @@
+# Gunakan image PHP 8.2 dengan FPM
+FROM php:8.2-fpm
+
+# Install dependencies sistem
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip \
+    libpq-dev \
+    libzip-dev \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql zip
+
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy semua file project
+COPY . .
+
+# Install dependensi Laravel
+RUN composer install --no-dev --optimize-autoloader
+
+# Set permission untuk storage dan cache
+RUN chmod -R 775 storage bootstrap/cache
+
+# Generate key
+RUN php artisan key:generate --force
+
+# Expose port
+EXPOSE 8080
+
+# Start server
+CMD php artisan serve --host=0.0.0.0 --port=8080
