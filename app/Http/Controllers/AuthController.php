@@ -69,7 +69,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->only('email','password');
+        $credentials = $request->only('email', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Invalid Credentials'], 401);
@@ -78,7 +78,7 @@ class AuthController extends Controller
         return response()->json([
             'token'      => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => JWTAuth::factory()->getTTL() * 60
         ], 200);
     }
 
@@ -93,10 +93,10 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json(JWTAuth::parseToken()->authenticate());
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/api/users",
      *     summary="Get all users or filter by role",
@@ -168,7 +168,7 @@ class AuthController extends Controller
         return response()->json($user, 200);
     }
 
-        /**
+    /**
      * @OA\Post(
      *     path="/api/logout",
      *     summary="Logout user and invalidate token",
@@ -182,7 +182,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        JWTAuth::invalidate(JWTAuth::getToken());
 
         return response()->json([
             'message' => 'Successfully logged out'
@@ -205,10 +205,8 @@ class AuthController extends Controller
     public function refresh()
     {
         return response()->json([
-            'access_token' => auth()->refresh(),
+            'access_token' => JWTAuth::refresh(JWTAuth::getToken()),
             'token_type' => 'bearer'
         ]);
     }
-
-
 }
