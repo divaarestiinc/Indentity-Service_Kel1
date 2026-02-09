@@ -56,7 +56,7 @@ Ikuti langkah-langkah berikut untuk menjalankan project di lokal:
 
 1.  **Clone Repository**
     ```bash
-    git clone https://github.com/divaarestiinc/identity-service.git
+    git clone https://github.com/divaarestiinc/Indentity-Service_Kel1.git
     cd identity-service
     ```
 
